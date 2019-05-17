@@ -16,6 +16,12 @@ suite =
                     |> Set.fromList
                     |> GameOfLife.stepGen
                     |> Expect.equal Set.empty
+            ,  test " in the universe dies due to underpopulation" <|
+                \_ ->
+                    threeLoneWorld
+                    |> Set.fromList
+                    |> GameOfLife.stepGen
+                    |> Expect.equal Set.empty
             , test " that is live with two or three live neighbours lives on to the next generation" <|
                 \_ ->
                     threeDiagonalWorld
@@ -37,6 +43,8 @@ suite =
                     |> Set.member (1, 1)
                     |> Expect.true "Expected the (1, 1) is resurrected"
             ]
+
+threeLoneWorld = [(0, 0), (3, 0), (2, 2)]
 
 twoCellWorld = [(0, 0), (0, 1)]
 threeDiagonalWorld = [(0, 0), (1, 1), (2,2)]
