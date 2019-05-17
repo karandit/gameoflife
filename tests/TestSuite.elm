@@ -12,41 +12,46 @@ suite =
     describe "Any cell "
             [ test "that is live with fewer than two live neighbours dies" <|
                 \_ ->
-                    twoCellWorld
-                    |> Set.fromList
-                    |> GameOfLife.stepGen
-                    |> Expect.equal Set.empty
+                        twoCellWorld
+                        |> GameOfLife.stepGen
+                        |> Expect.all [
+                            (Set.member (0, 0) >> Expect.false "Expected the (0, 0) is dead"),
+                            (Set.member (0, 1) >> Expect.false "Expected the (0, 1) is dead")
+                        ]
             ,  test " in the universe dies due to underpopulation" <|
                 \_ ->
                     threeLoneWorld
-                    |> Set.fromList
                     |> GameOfLife.stepGen
-                    |> Expect.equal Set.empty
+                    |> Expect.all [
+                            (Set.member (0, 0) >> Expect.false "Expected the (0, 0) is dead"),
+                            (Set.member (3, 0) >> Expect.false "Expected the (0, 1) is dead"),
+                            (Set.member (2, 2) >> Expect.false "Expected the (0, 1) is dead")
+                    ]
             , test " that is live with two or three live neighbours lives on to the next generation" <|
                 \_ ->
                     threeDiagonalWorld
-                    |> Set.fromList
                     |> GameOfLife.stepGen
-                    |> Expect.equal (Set.singleton (1, 1))
+                    |> Expect.all [
+                            (Set.member (1, 1) >> Expect.true "Expected the (1, 1) is alive"),
+                            (Set.member (0, 0) >> Expect.false "Expected the (0, 1) is dead"),
+                            (Set.member (0, 1) >> Expect.false "Expected the (0, 1) is dead")
+                    ]
             , test " that is live with more than three live neighbours dies" <|
                 \_ ->
                     horseShoeWorld
-                    |> Set.fromList
                     |> GameOfLife.stepGen
                     |> Set.member (1, 1)
                     |> Expect.false "Expected the (1, 1) is dead"
             , test "  that is dead with exactly three live neighbours becomes a live cell" <|
                 \_ ->
                     triadWorld
-                    |> Set.fromList
                     |> GameOfLife.stepGen
                     |> Set.member (1, 1)
                     |> Expect.true "Expected the (1, 1) is resurrected"
             ]
 
-threeLoneWorld = [(0, 0), (3, 0), (2, 2)]
-
-twoCellWorld = [(0, 0), (0, 1)]
-threeDiagonalWorld = [(0, 0), (1, 1), (2,2)]
-horseShoeWorld = [(0, 0), (0, 1), (1,1), (2,0), (2,1)]
-triadWorld = [(0, 0), (0, 2), (2, 2)]
+twoCellWorld = [(0, 0), (0, 1)] |> Set.fromList
+threeLoneWorld = [(0, 0), (3, 0), (2, 2)] |> Set.fromList
+threeDiagonalWorld = [(0, 0), (1, 1), (2,2)] |> Set.fromList
+horseShoeWorld = [(0, 0), (0, 1), (1,1), (2,0), (2,1)] |> Set.fromList
+triadWorld = [(0, 0), (0, 2), (2, 2)] |> Set.fromList
